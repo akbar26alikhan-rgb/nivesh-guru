@@ -20,9 +20,6 @@ export interface MFSearchItem {
   schemeName: string;
 }
 
-/**
- * Searches for funds across the entire Indian MF database
- */
 export const searchFunds = async (query: string): Promise<MFSearchItem[]> => {
   if (!query || query.length < 3) return [];
   try {
@@ -35,10 +32,12 @@ export const searchFunds = async (query: string): Promise<MFSearchItem[]> => {
   }
 };
 
-/**
- * Fetches current NAV and historical data for a specific fund scheme.
- * Calculated CAGR based on fetched data.
- */
+const calculateCAGR = (currentNav: number, pastNav: number, years: number) => {
+  if (!pastNav || pastNav <= 0) return 0;
+  const cagr = (Math.pow(currentNav / pastNav, 1 / years) - 1) * 100;
+  return parseFloat(cagr.toFixed(2));
+};
+
 export const fetchLiveFundData = async (schemeCode: string | number) => {
   try {
     const response = await fetch(`${BASE_URL}/${schemeCode}`);
@@ -49,23 +48,31 @@ export const fetchLiveFundData = async (schemeCode: string | number) => {
 
     const currentNav = parseFloat(json.data[0].nav);
     
-    // Calculate 1 Year Return (Approx 252 trading days)
-    const nav1yAgo = json.data[252] ? parseFloat(json.data[252].nav) : parseFloat(json.data[json.data.length - 1].nav);
-    const returns1y = ((currentNav - nav1yAgo) / nav1yAgo) * 100;
+    // Returns calculation (Approx 252 trading days per year)
+    const getNavAtYear = (years: number) => {
+      const index = Math.min(Math.round(years * 252), json.data.length - 1);
+      return parseFloat(json.data[index].nav);
+    };
 
-    // Calculate 3 Year Return (Approx 756 trading days)
-    const nav3yAgo = json.data[756] ? parseFloat(json.data[756].nav) : null;
-    let returns3y = 0;
-    if (nav3yAgo) {
-      returns3y = (Math.pow(currentNav / nav3yAgo, 1 / 3) - 1) * 100;
-    }
+    const nav1y = getNavAtYear(1);
+    const nav3y = getNavAtYear(3);
+    const nav5y = getNavAtYear(5);
+    const nav10y = getNavAtYear(10);
 
     return {
       meta: json.meta,
       currentNav,
-      returns1y: parseFloat(returns1y.toFixed(2)),
-      returns3y: parseFloat(returns3y.toFixed(2)),
+      returns: {
+        '1y': ((currentNav - nav1y) / nav1y) * 100,
+        '3y': calculateCAGR(currentNav, nav3y, 3),
+        '5y': calculateCAGR(currentNav, nav5y, 5),
+        '10y': calculateCAGR(currentNav, nav10y, 10),
+      },
       lastUpdated: new Date().toLocaleTimeString(),
+      history: json.data.slice(0, 252).reverse().map(d => ({
+        date: d.date,
+        nav: parseFloat(d.nav)
+      }))
     };
   } catch (error) {
     console.error(`Error fetching fund ${schemeCode}:`, error);
