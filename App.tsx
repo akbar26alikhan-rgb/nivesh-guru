@@ -150,7 +150,8 @@ const App: React.FC = () => {
     });
     if (inputs.horizon === '1 Year') filtered = filtered.filter(f => f.category === 'Debt / Liquid');
     else if (inputs.horizon === '3 Years') filtered = filtered.filter(f => ['Large Cap', 'Index Fund', 'Debt / Liquid'].includes(f.category));
-    return filtered.sort((a, b) => b.score.total - a.score.total).slice(0, 3);
+    // Display up to 10 recommendations
+    return filtered.sort((a, b) => b.score.total - a.score.total).slice(0, 10);
   }, [inputs, funds]);
 
   const fetchAdvice = useCallback(async () => {
@@ -163,7 +164,7 @@ const App: React.FC = () => {
     fetchAdvice();
   }, [recommendedFunds, fetchAdvice]);
 
-  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899'];
+  const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#ef4444', '#f97316', '#06b6d4', '#14b8a6', '#6366f1'];
   const allocationData = recommendedFunds.map((f, i) => ({
     name: f.category,
     value: Math.floor(100 / recommendedFunds.length),
@@ -326,26 +327,25 @@ const App: React.FC = () => {
                   <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                     <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
                       <PieChartIcon className="w-5 h-5 text-indigo-600" />
-                      Live Allocation
+                      Portfolio Diversification
                     </h2>
-                    <div className="h-[200px] w-full">
+                    <div className="h-[250px] w-full">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
-                          <Pie data={allocationData} innerRadius={50} outerRadius={70} paddingAngle={5} dataKey="value">
+                          <Pie data={allocationData} innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value" animationDuration={1000}>
                             {allocationData.map((_, index) => <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />)}
                           </Pie>
                           <RechartsTooltip />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                    <div className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2 mt-2">
                       {recommendedFunds.map((f, i) => (
-                        <div key={f.id} className="flex justify-between items-center text-sm border-b border-slate-50 pb-2">
-                          <div className="flex items-center gap-2 truncate">
+                        <div key={f.id} className="flex justify-between items-center text-[10px] border-b border-slate-50 pb-1">
+                          <div className="flex items-center gap-1.5 truncate">
                             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[i % COLORS.length] }}></div>
-                            <span className="text-slate-600 font-medium truncate">{f.name}</span>
+                            <span className="text-slate-600 font-bold truncate">{f.name}</span>
                           </div>
-                          <span className="font-bold text-slate-800">{allocationData[i].value}%</span>
                         </div>
                       ))}
                     </div>
@@ -354,26 +354,28 @@ const App: React.FC = () => {
                   <div className="space-y-4">
                     <h2 className="text-lg font-bold text-slate-800 px-2 flex items-center gap-2">
                       <ShieldCheck className="w-5 h-5 text-green-600" />
-                      Live Recommendations
+                      Top 10 Live Recommendations
                     </h2>
-                    {recommendedFunds.map(fund => (
-                      <div key={fund.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group" onClick={() => {
-                        setActiveTab('explore');
-                        handleSelectSearchedFund(parseInt(fund.schemeCode));
-                      }}>
-                        <div className="flex justify-between mb-2">
-                          <span className="px-2 py-0.5 bg-indigo-50 text-[9px] font-bold text-indigo-600 rounded uppercase">
-                            NAV: ₹{fund.currentNav || '...'}
-                          </span>
-                          <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">Score: {fund.score.total}</span>
+                    <div className="max-h-[400px] overflow-y-auto pr-2 custom-scrollbar space-y-3">
+                      {recommendedFunds.map(fund => (
+                        <div key={fund.id} className="bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group" onClick={() => {
+                          setActiveTab('explore');
+                          handleSelectSearchedFund(parseInt(fund.schemeCode));
+                        }}>
+                          <div className="flex justify-between mb-2">
+                            <span className="px-2 py-0.5 bg-indigo-50 text-[9px] font-bold text-indigo-600 rounded uppercase">
+                              NAV: ₹{fund.currentNav || '...'}
+                            </span>
+                            <span className="text-xs font-bold text-slate-400 group-hover:text-indigo-600 transition-colors">Score: {fund.score.total}</span>
+                          </div>
+                          <h3 className="font-bold text-slate-800 text-sm mb-3 group-hover:text-indigo-600 transition-colors">{fund.name}</h3>
+                          <div className="flex gap-4">
+                            <div><p className="text-[10px] text-slate-400 uppercase font-bold">1Y Return</p><p className="text-sm font-black text-green-600">{fund.returns['1y']?.toFixed(2)}%</p></div>
+                            <div><p className="text-[10px] text-slate-400 uppercase font-bold">Alpha</p><p className="text-sm font-black text-indigo-600">+{fund.riskRatios.alpha}</p></div>
+                          </div>
                         </div>
-                        <h3 className="font-bold text-slate-800 text-sm mb-3 group-hover:text-indigo-600 transition-colors">{fund.name}</h3>
-                        <div className="flex gap-4">
-                          <div><p className="text-[10px] text-slate-400 uppercase font-bold">1Y Return</p><p className="text-sm font-black text-green-600">{fund.returns['1y']?.toFixed(2)}%</p></div>
-                          <div><p className="text-[10px] text-slate-400 uppercase font-bold">Alpha</p><p className="text-sm font-black text-indigo-600">+{fund.riskRatios.alpha}</p></div>
-                        </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
                 </div>
               </>
@@ -386,7 +388,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {activeTab === 'compare' && <ComparisonTool funds={funds} />}
+            {activeTab === 'compare' && <ComparisonTool funds={recommendedFunds} />}
 
             {activeTab === 'learn' && <TaxGuide />}
 
