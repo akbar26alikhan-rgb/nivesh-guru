@@ -17,7 +17,7 @@ const TaxGuide: React.FC = () => {
             Equity Mutual Funds
           </h4>
           <ul className="text-xs text-blue-900/70 space-y-2">
-            <li>• <strong>LTCG:</strong> 12.5% on profits exceeding ₹1.25 Lakh per year (Held > 12 months).</li>
+            <li>• <strong>LTCG:</strong> 12.5% on profits exceeding ₹1.25 Lakh per year (Held {'>'} 12 months).</li>
             <li>• <strong>STCG:</strong> Flat 20% on all profits if held for less than 12 months.</li>
           </ul>
         </div>
