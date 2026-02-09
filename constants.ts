@@ -61,34 +61,35 @@ export const MOCK_FUNDS: MutualFund[] = [
     score: { total: 88, returns: 20, expense: 15, manager: 12, volatility: 15, aum: 8, drawdown: 13, quality: 5 },
     description: 'Low-cost tracker for Nifty 50, perfect for long-term core portfolios.',
     redFlags: []
-  },
-  {
-    id: '4',
-    schemeCode: '118989', // HDFC Mid-Cap Opportunities (Used for Red Flag sample)
-    name: 'High-Cost Active Fund (Sample)',
-    category: 'Mid Cap',
-    risk: 'High',
-    expenseRatio: 2.15,
-    exitLoad: '1% if < 1yr',
-    aum: '₹450 Cr',
-    aumValue: 450,
-    benchmarkName: 'Nifty Midcap 150 TRI',
-    returns: { '1y': 15.5, '3y': 12.1, '5y': 10.4, '10y': 11.2, 'rolling': 9.5 },
-    benchmarkReturns: { '5y': 20.4 },
-    manager: { name: 'New Manager', experience: 5, rating: 2.5, tenureYears: 0.5 },
-    holdings: ['Various Midcaps'],
-    riskRatios: { sharpe: 0.45, alpha: -4.2, beta: 1.25, sortino: 0.5, standardDeviation: 22.1 },
-    score: { total: 42, returns: 10, expense: 2, manager: 5, volatility: 8, aum: 3, drawdown: 9, quality: 5 },
-    description: 'A sample fund showing red flags like high expense and low performance.',
-    redFlags: ['High Expense Ratio', 'Underperforming Benchmark', 'Low AUM', 'Frequent Manager Change']
   }
 ];
 
 export const CATEGORY_GUIDANCE = {
-  'Index Fund': 'Perfect for beginners. Tracks Nifty/Sensex with the lowest fees.',
-  'Large Cap': 'Relatively stable growth with India\'s top 100 companies.',
-  'Flexi Cap': 'Dynamic allocation across company sizes. Managed for all-season growth.',
-  'Mid Cap': 'Higher growth potential by investing in emerging industry leaders.',
-  'Small Cap': 'High risk, high reward. Only for investors with 7+ years horizon.',
-  'Debt / Liquid': 'Low risk preservation. Ideal for emergency funds or < 2 years goals.'
+  // Equity
+  'Small Cap': 'High risk, high reward. Invests in emerging companies. Minimum 7+ years horizon.',
+  'Mid Cap': 'Balanced growth and volatility. Invests in future industry leaders.',
+  'Large Cap': 'Relatively stable. Invests in top 100 established companies.',
+  'Flexi Cap': 'Dynamic investment across all market caps based on market conditions.',
+  'Multi Cap': 'Strict allocation across Small, Mid, and Large caps (25% each).',
+  'ELSS': 'Tax-saving equity funds with a 3-year lock-in under Section 80C.',
+  'Focused': 'Concentrated portfolio of max 30 stocks for high conviction growth.',
+  'Sectoral': 'Targeted investment in specific industries like Banking, Tech, or Pharma.',
+  
+  // Hybrid
+  'Aggressive Hybrid': 'Mix of 65-80% Equity and rest in Debt for capital appreciation.',
+  'Balanced Advantage': 'Dynamic Asset Allocation that shifts between Debt and Equity.',
+  'Arbitrage': 'Low risk. Profits from price differences in cash and derivatives markets.',
+  'Multi Asset': 'Invests in at least 3 asset classes (Equity, Debt, Gold).',
+
+  // Debt
+  'Liquid': 'Safe for 1-90 days. Ideal for parking emergency funds.',
+  'Ultra Short': 'Low risk for 3-6 months. Better than savings bank returns.',
+  'Corporate Bond': 'Invests in high-rated corporate papers for steady income.',
+  'Gilt': 'Invests in Government Securities. Sensitive to interest rate changes.',
+  'Overnight': 'Extremely safe. Invests in securities maturing in 1 day.',
+
+  // Others
+  'Index Fund': 'Passive low-cost funds that track indices like Nifty 50 or Sensex.',
+  'ETF': 'Exchange Traded Funds. Passive, low cost, and traded like stocks.',
+  'International': 'Provides exposure to global markets like US, China, or Europe.'
 };
